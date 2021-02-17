@@ -1,0 +1,64 @@
+1) Базовая концепция Verilog. Симуляция. Icarus Verilog.
+    Основная концепция языка - модули. Модуль описывает схему или часть схемы
+
+    // ------------------------------------------
+    module module_name (
+        port_direction port_name,
+        port_direction port_name,
+        ...    
+    );
+
+    endmodule
+    // ------------------------------------------
+
+    Input -> module_name -> Output
+
+    // ------------------------------------------
+    Тривиальный модуль
+
+    module lab00_test (
+        input  wire clk,
+        output wire clk1 
+    );
+
+    assign clk1 = clk; // Continuous assignment
+
+    endmodule
+    // ------------------------------------------
+
+    Проверяем, что модуль работает.
+    Тестируем синтезируемый модуль - можно превратить в микросхему (ASIC или прошивка FPGA)
+    Тестирующий несинтезируемый модуль - нельзя превратить в микросхему
+
+    // ------------------------------------------
+    Тестовое окружение
+
+    'timescale 1 ns / 100 ps
+
+    module testbench ();
+
+    reg clk = 1'b0;
+    always begin
+        #1 clk = ~clk;
+    end
+
+    wire clk1;
+
+    lab00_test lab00_test (.clk (clk), .clk1 (clk1));
+
+    initial begin
+        $dumpvars;
+        $display ("Test started...");
+        #10 $finish;
+    end
+
+    endmodule
+    // ------------------------------------------
+    
+    Симуляция:
+
+    iverilog testbench.v lab00_test.v -o lab00_test.o
+    ./lab00_test
+    gtkwave dump.vcd
+
+    Ссылки: https://github.com/viktor-prutyanov/drec-fpga-intro
